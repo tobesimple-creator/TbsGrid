@@ -1,6 +1,6 @@
 # TbsGrid
 
-Welcome to TbsGrid(Beta) 
+Welcome to TbsGrid(developing) 
 
 I am a web grid developer.
 
