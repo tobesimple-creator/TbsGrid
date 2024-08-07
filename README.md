@@ -2,6 +2,8 @@
 
 Welcome to TbsGrid(developing) 
 
+TbsGrid is html web grid.
+
 I am a web grid developer.
 
 TbsGrid and demo site is currently under development.
