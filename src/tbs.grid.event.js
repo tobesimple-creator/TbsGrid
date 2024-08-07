@@ -232,24 +232,21 @@ TbsGrid.prototype.event_columnResize = function(panelName) {
                 let canvas = document.querySelector(selector + ' .tbs-grid-canvas').childNodes[0];
                 for (let i = 0, len = grid.headerColumns.length; i < len; i++){
                     let font = "12pt arial";
-                    if (grid.headerColumns[i][colIndex][grid.column_kind] == 'column') {
-                        let width = parseInt(grid.getTextWidth(canvas, grid.headerColumns[i][colIndex][grid.column_text], font));
+                    let headerColumn = grid.headerColumns[i];
+                    if (headerColumn[colIndex][grid.column_kind] == 'column') {
+                        let width = parseInt(grid.getTextWidth(canvas, headerColumn[colIndex][grid.column_text], font));
                         if (width >= maxWidth) maxWidth = width;
                     }
                 }
-
-                for (let i = 0, len = grid.data_panel30.length; i < len; i++) {
-                    let font = "12pt arial";
-                    let width = parseInt(grid.getTextWidth(canvas, grid.data_panel30[i].layout[id][grid.layout_text], font));
-                    if (width >= maxWidth) maxWidth = width;
-                }
-
-                grid.tbs_setScroll(grid.const_horizontal);
-                grid.tbs_setScroll(grid.const_vertical);
-
+                //for (let i = 0, len = grid.data_panel30.length; i < len; i++) {
+                //    let font = "12pt arial";
+                //    let width = parseInt(grid.getTextWidth(canvas, grid.data_panel30[i].layout[id][grid.layout_text], font));
+                //    if (width >= maxWidth) maxWidth = width;
+                //}
                 grid.tbs_setColumnWidth(colIndex, maxWidth);
-                grid.tbs_displayPanel20();
-                grid.tbs_selectedRange(grid.startRowIndex, grid.lastRowIndex, grid.startCellIndex, grid.lastCellIndex, grid.tbs_getFirstRowIndex());
+                grid.tbs_displayPanel30(grid.tbs_getFirstRowIndex());
+                //grid.tbs_displayPanel20();
+                //grid.tbs_selectedRange(grid.startRowIndex, grid.lastRowIndex, grid.startCellIndex, grid.lastCellIndex, grid.tbs_getFirstRowIndex());
             }
         };
         //eventColumnResize
@@ -258,17 +255,17 @@ TbsGrid.prototype.event_columnResize = function(panelName) {
                 e.stopPropagation();
                 movedWidth = e.clientX - startX;
                 //content
-                let thList20 = document.querySelectorAll(selector + ' .tbs-grid-panel20 .tbs-grid-table thead th');
-                let thList30 = document.querySelectorAll(selector + ' .tbs-grid-panel30 .tbs-grid-table thead th');
-                let thList60 = document.querySelectorAll(selector + ' .tbs-grid-panel60 .tbs-grid-table thead th');
-                let thList40 = document.querySelectorAll(selector + ' .tbs-grid-panel40 .tbs-grid-table thead th');
-                let thList50 = document.querySelectorAll(selector + ' .tbs-grid-panel50 .tbs-grid-table thead th');
+                //let thList20 = document.querySelectorAll(selector + ' .tbs-grid-panel20 .tbs-grid-table thead th');
+                //let thList30 = document.querySelectorAll(selector + ' .tbs-grid-panel30 .tbs-grid-table thead th');
+                //let thList60 = document.querySelectorAll(selector + ' .tbs-grid-panel60 .tbs-grid-table thead th');
+                //let thList40 = document.querySelectorAll(selector + ' .tbs-grid-panel40 .tbs-grid-table thead th');
+                //let thList50 = document.querySelectorAll(selector + ' .tbs-grid-panel50 .tbs-grid-table thead th');
                 //frozen column content
-                let thList22 = document.querySelectorAll(selector + ' .tbs-grid-panel22 .tbs-grid-table thead th');
-                let thList32 = document.querySelectorAll(selector + ' .tbs-grid-panel32 .tbs-grid-table thead th');
-                let thList62 = document.querySelectorAll(selector + ' .tbs-grid-panel62 .tbs-grid-table thead th');
-                let thList42 = document.querySelectorAll(selector + ' .tbs-grid-panel42 .tbs-grid-table thead th');
-                let thList52 = document.querySelectorAll(selector + ' .tbs-grid-panel52 .tbs-grid-table thead th');
+                //let thList22 = document.querySelectorAll(selector + ' .tbs-grid-panel22 .tbs-grid-table thead th');
+                //let thList32 = document.querySelectorAll(selector + ' .tbs-grid-panel32 .tbs-grid-table thead th');
+                //let thList62 = document.querySelectorAll(selector + ' .tbs-grid-panel62 .tbs-grid-table thead th');
+                //let thList42 = document.querySelectorAll(selector + ' .tbs-grid-panel42 .tbs-grid-table thead th');
+                //let thList52 = document.querySelectorAll(selector + ' .tbs-grid-panel52 .tbs-grid-table thead th');
 
                 if (tableCell.dataset.id == '') {
                     // blank header cell
@@ -278,30 +275,34 @@ TbsGrid.prototype.event_columnResize = function(panelName) {
                         let cellIndex = childList[i];
                         let nWidth = (initWidth[i] + moveWidth) < 10 ? 10 : (initWidth[i] + moveWidth) + 'px';
 
-                        let column = grid.columns[tableCell.cellIndex];
-                        column[grid.column_width] = parseInt(nWidth, 10);
-
-                        thList20[cellIndex].style.width = nWidth;
-                        thList30[cellIndex].style.width = nWidth;
-                        if (grid.fixedRowIndex        != -1) thList60[cellIndex].style.width = nWidth;
-                        if (grid.topColumns.length    >   0) thList40[cellIndex].style.width = nWidth;
-                        if (grid.footerColumns.length >   0) thList50[cellIndex].style.width = nWidth;
+                        // let column = grid.columns[tableCell.cellIndex];
+                        // column[grid.column_width] = parseInt(nWidth, 10);
+                        ////
+                        // thList20[cellIndex].style.width = nWidth;
+                        // thList30[cellIndex].style.width = nWidth;
+                        // if (grid.fixedRowIndex        != -1) thList60[cellIndex].style.width = nWidth;
+                        // if (grid.topColumns.length    >   0) thList40[cellIndex].style.width = nWidth;
+                        // if (grid.footerColumns.length >   0) thList50[cellIndex].style.width = nWidth;
+                        grid.tbs_setColumnWidth(cellIndex, nWidth);
                     }
+                    grid.tbs_displayPanel30(grid.tbs_getFirstRowIndex());
                 }
                 else {
                     let cellIndex = tableCell.cellIndex;
                     let nWidth = ((cellWidth + movedWidth) < 10 ? 10 : (cellWidth + movedWidth)) + 'px';
-                    let column = grid.columns[tableCell.cellIndex];
-                    column[grid.column_width] = parseInt(nWidth, 10);
-
-                    thList20[cellIndex].style.width = nWidth;
-                    thList30[cellIndex].style.width = nWidth;
-                    if (grid.fixedRowIndex        != -1) thList60[cellIndex].style.width = nWidth;
-                    if (grid.topColumns.length    >   0) thList40[cellIndex].style.width = nWidth;
-                    if (grid.footerColumns.length >   0) thList50[cellIndex].style.width = nWidth;
+                    // let column = grid.columns[tableCell.cellIndex];
+                    // column[grid.column_width] = parseInt(nWidth, 10);
+                    //
+                    // thList20[cellIndex].style.width = nWidth;
+                    // thList30[cellIndex].style.width = nWidth;
+                    // if (grid.fixedRowIndex        != -1) thList60[cellIndex].style.width = nWidth;
+                    // if (grid.topColumns.length    >   0) thList40[cellIndex].style.width = nWidth;
+                    // if (grid.footerColumns.length >   0) thList50[cellIndex].style.width = nWidth;
+                    grid.tbs_setColumnWidth(cellIndex, nWidth);
+                    grid.tbs_displayPanel30(grid.tbs_getFirstRowIndex());
                 }
-                grid.tbs_setScroll(grid.const_horizontal);
-                grid.tbs_displayPanel30(grid.tbs_getFirstRowIndex());
+                //grid.tbs_setScroll(grid.const_horizontal);
+                //grid.tbs_displayPanel30(grid.tbs_getFirstRowIndex());
             }
         };
         //eventColumnResize

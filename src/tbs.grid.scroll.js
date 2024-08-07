@@ -3,7 +3,7 @@
  *
  */
 TbsGrid.prototype.tbs_setPanelSize = function() {
-	//header가 생성이 되어야 사용가능
+	// Necessary after create header
 	let selector = '#' + this.gridId;
 	let grid = this;
 
@@ -50,9 +50,7 @@ TbsGrid.prototype.tbs_setPanelSize = function() {
 	if (this.toolbar_visible == true) main.style.height = (rectGrid.height - 25) + 'px';
 	else main.style.height = (rectGrid.height) + 'px';
 
-	//==================================================================
 	// header : group21, group22 group20
-	//==================================================================
 	let rectTable21= document.querySelector(selector + ' .tbs-grid-panel21	.tbs-grid-table').getBoundingClientRect();
 	let rectTable22= document.querySelector(selector + ' .tbs-grid-panel22 .tbs-grid-table').getBoundingClientRect();
 	let rectTable20= document.querySelector(selector + ' .tbs-grid-panel20 .tbs-grid-table').getBoundingClientRect();
@@ -94,9 +92,7 @@ TbsGrid.prototype.tbs_setPanelSize = function() {
 		group20.style.height = height + 'px';
 		panel22.style.width  = '0px';
 	}
-	//==================================================================
 	// summary top : group41, group42, group40
-	//==================================================================
 	if (this.topColumns.length > 0){
 		let rectTable41 = document.querySelector(selector + ' .tbs-grid-panel41 .tbs-grid-table').getBoundingClientRect();
 		let rectTable42 = document.querySelector(selector + ' .tbs-grid-panel42 .tbs-grid-table').getBoundingClientRect();
@@ -141,9 +137,7 @@ TbsGrid.prototype.tbs_setPanelSize = function() {
 		}
 		height += parseInt(rectTable40.height);
 	}
-	//==================================================================
 	// frozen row : group61, group62, group60
-	//==================================================================
 	if (this.fixedRowIndex != -1 && this.fixedColumnIndex != -1) {
 		group61.style.top    = height + 'px';
 		group61.style.left   = group21.style.left;
@@ -188,9 +182,7 @@ TbsGrid.prototype.tbs_setPanelSize = function() {
 
 		height += this.fixedRowCount * grid.rowHeight;
 	}
-	//==================================================================
 	// content : group31, group32, group30
-	//==================================================================
 	if (this.fixedRowIndex != -1) {
 		let rectTable31 = document.querySelector(selector + ' .tbs-grid-panel31 .tbs-grid-table').getBoundingClientRect();
 		let rectTable32 = document.querySelector(selector + ' .tbs-grid-panel32 .tbs-grid-table').getBoundingClientRect();
@@ -248,9 +240,7 @@ TbsGrid.prototype.tbs_setPanelSize = function() {
 		panel32.style.width  = '0px';
 		panel30.style.left   = '0px';
 	}
-	//==================================================================
 	// summary footer : group51, group52, group50
-	//==================================================================
 	if (this.footerColumns.length > 0) {
 		if (this.fixedColumnIndex != -1 && this.fixedRowIndex != -1) {
 			let rectTable50  = document.querySelector(selector + ' .tbs-grid-panel50 .tbs-grid-table').getBoundingClientRect();
@@ -528,18 +518,17 @@ TbsGrid.prototype.tbs_setScroll2 = function(type, scrollName = 'scroll') {
 
 		if (grid.fixedRowIndex != -1) {
 			dataLength = dataLength - (grid.fixedRowIndex + 1);
-
-			if (this.pageRowCount > this.pageIntRowCount) {
+			if (dataLength <= this.pageIntRowCount) {
+				grid.tbs_hideScroll(type);
+			}
+			else if (this.pageRowCount > this.pageIntRowCount) {
 				if (dataLength >= pageRowCount) {
 					yScroll.style.display = '';
 					scrollBox.style.display = '';
 					wrap.style.marginRight = this.scroll.margin;
-
 					this.tbs_setScrollSize(type);
 				} else {
-					yScroll.style.display = 'none';
-					scrollBox.style.display = 'none';
-					wrap.style.marginRight = '0px';
+					grid.tbs_hideScroll(type);
 				}
 			}
 			else {
@@ -547,33 +536,25 @@ TbsGrid.prototype.tbs_setScroll2 = function(type, scrollName = 'scroll') {
 					yScroll.style.display = '';
 					scrollBox.style.display = '';
 					wrap.style.marginRight = this.scroll.margin;
-
 					this.tbs_setScrollSize(type);
 				} else {
-					yScroll.style.display = 'none';
-					scrollBox.style.display = 'none';
-					wrap.style.marginRight = this.scroll.margin;
+					grid.tbs_hideScroll(type);
 				}
 			}
-			if (xScroll.style.display == 'none' && yScroll.style.display == 'none') {
-				scrollBox.style.display = 'none';
-			}
-
-			let yBar = document.querySelector(selector + ' .tbs-grid-vertical-scroll-bar');
-			yBar.style.top = '0px';	document.querySelector(selector + ' .tbs-grid-panel30').childNodes[0].style.left = '0px';
 		}
 		else {
-			if (this.pageRowCount > this.pageIntRowCount) {
+			if (dataLength <= this.pageIntRowCount) {
+				grid.tbs_hideScroll(type);
+			}
+			else if (this.pageRowCount > this.pageIntRowCount) {
 				if (dataLength >= pageRowCount) {
 					yScroll.style.display = '';
 					scrollBox.style.display = '';
 					wrap.style.marginRight = this.scroll.margin;
 
-					this.tbs_setScrollSize(type);
+					grid.tbs_setScrollSize(type);
 				} else {
-					yScroll.style.display = 'none';
-					scrollBox.style.display = 'none';
-					wrap.style.marginRight = '0px';
+					grid.tbs_hideScroll(type);
 				}
 			}
 			else {
@@ -582,19 +563,11 @@ TbsGrid.prototype.tbs_setScroll2 = function(type, scrollName = 'scroll') {
 					scrollBox.style.display = '';
 					wrap.style.marginRight = this.scroll.margin;
 
-					this.tbs_setScrollSize(type);
+					grid.tbs_setScrollSize(type);
 				} else {
-					yScroll.style.display = 'none';
-					scrollBox.style.display = 'none';
-					wrap.style.marginRight = this.scroll.margin;
+					grid.tbs_hideScroll(type);
 				}
 			}
-			if (xScroll.style.display == 'none' && yScroll.style.display == 'none') {
-				scrollBox.style.display = 'none';
-			}
-
-			let yBar = document.querySelector(selector + ' .tbs-grid-vertical-scroll-bar');
-			yBar.style.top = '0px';	document.querySelector(selector + ' .tbs-grid-panel30').childNodes[0].style.left = '0px';
 		}
 	}
 }
@@ -655,7 +628,12 @@ TbsGrid.prototype.tbs_hideScroll = function(type) {
 		document.querySelector(selector + ' .tbs-grid-panel60 .tbs-grid-table').style.left = '0px';
 	}
 	else if (type == this.const_vertical) {
+		let xScroll = document.querySelector(selector + ' .tbs-grid-horizontal-scroll');
+		let yScroll = document.querySelector(selector + ' .tbs-grid-vertical-scroll');
+		let scrollBox = document.querySelector(selector + ' .tbs-grid-scroll-box');
 
+		yScroll.style.display = 'none';
+		if (xScroll.style.display == 'none' && yScroll.style.display == 'none') scrollBox.style.display = 'none';
 	}
 }
 TbsGrid.prototype.tbs_setScrollSize = function(type) {
@@ -675,9 +653,9 @@ TbsGrid.prototype.tbs_setScrollSize = function(type) {
 		xBar.style.width = grid.tbs_getScrollHorizontalBarWidth('scroll', barSize);
 	}
 	if (type == this.const_vertical) {
-		let barSize = grid.tbs_getScrollVerticalBarSize('scroll');
+		let barSize  = grid.tbs_getScrollVerticalBarSize('scroll');
 		let railSize = grid.tbs_getScrollVerticalRailSize('scroll', barSize);
-		let moveCount = grid.tbs_getScrollVerticalMoveCount('scroll', railSize);
+		let moveCount= grid.tbs_getScrollVerticalMoveCount('scroll', railSize);
 
 		this.scroll.yBarSize = barSize; //data
 		this.scroll.yRailSize = railSize; //data
@@ -850,14 +828,21 @@ TbsGrid.prototype.tbs_setColumnWidth = function (colIndex, value) {
 	let nWidth = parseInt(value) + 'px';
 	grid.columns[colIndex][grid.column_width] = parseInt(value, 10);
 
-	colList[colIndex].style.width = nWidth;
+	colList[colIndex].style.width  = nWidth;
 	colList2[colIndex].style.width = nWidth;
 	if (grid.fixedRowIndex        != -1) colList5[colIndex].style.width = nWidth;
-	if (grid.topColumns.length    > 0) colList3[colIndex].style.width = nWidth;
-	if (grid.footerColumns.length > 0) colList4[colIndex].style.width = nWidth;
+	if (grid.topColumns.length    > 0  ) colList3[colIndex].style.width = nWidth;
+	if (grid.footerColumns.length > 0  ) colList4[colIndex].style.width = nWidth;
 
     this.tbs_setScroll(this.const_horizontal);
-    this.tbs_setScroll(this.const_vertical);
+	this.tbs_setScroll(this.const_vertical);
+
+	//if (grid.pageIntRowCount == grid.tbs_getRowCount())
+	//	//hide scroll bar
+	//	this.tbs_setScroll(this.const_vertical);
+	//else if (grid.pageRowCount > grid.pageIntRowCount && grid.tbs_getRowCount() > grid.pageIntRowCount)
+	//	//show scroll bar
+	//	this.tbs_setScroll(this.const_vertical);
 }
 TbsGrid.prototype.tbs_setAllColumnWidth = function (arr) {
 	let selector = '#' + this.gridId;;
@@ -878,7 +863,6 @@ TbsGrid.prototype.tbs_setAllColumnWidth = function (arr) {
 		if (this.fixedRowIndex      != -1) thList60[x].style.width = nWidth;
 	}
     this.tbs_setScroll(this.const_horizontal);
-    this.tbs_setScroll(this.const_vertical);
 }
 
 TbsGrid.prototype.tbs_setPageRowCount = function(panelName = '') {
@@ -930,10 +914,10 @@ TbsGrid.prototype.tbs_getScrollHorizontalHiddenSize = function(scrollName) {
 	}
 	else {
 		let panel20= document.querySelector(selector + ' .tbs-grid-panel20');
-		let hiddenSize = Number(panel20.scrollWidth - panel20.clientWidth) + 16;	//스크롤바 사이즈만큼 더 할당(14px 인데 2px 더 추가)
+		let hiddenSize = Number(panel20.scrollWidth - panel20.clientWidth) + 16;	// add size( default 14px / add 2px)
 		if (panel20.childNodes[0].getBoundingClientRect().width < panel20.getBoundingClientRect().width) hiddenSize = 0;
 		return hiddenSize;
-		//let hiddenSize = Number(header.scrollWidth - header.clientWidth) + 16;	//스크롤바 사이즈만큼 더 할당(14px 인데 2px 더 추가)
+		//let hiddenSize = Number(header.scrollWidth - header.clientWidth) + 16;
 		//if (header.childNodes[0].getBoundingClientRect().width < header.getBoundingClientRect().width) {
 		//	barSize = xWrap.clientWidth;
 		//	hiddenSize = 0;
@@ -1008,7 +992,7 @@ TbsGrid.prototype.tbs_getScrollVerticalRailSize = function(scrollName, barSize) 
 	}
 	else {
 		let yWrap = document.querySelector(selector + ' .tbs-grid-vertical-scroll-wrap');
-		let railSize = yWrap.clientHeight - barSize; //Rail의 높이
+		let railSize = yWrap.clientHeight - barSize;
 		return railSize;
 	}
 }
