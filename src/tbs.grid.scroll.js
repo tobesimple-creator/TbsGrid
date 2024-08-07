@@ -1,4 +1,4 @@
-/**
+﻿/**
  * tbs.grid.scroll.js
  *
  */
@@ -312,7 +312,7 @@ TbsGrid.prototype.tbs_setScroll = function(type, initValue) {
 
 	grid.tbs_setScroll2(type, initValue, 'scroll');
 }
-TbsGrid.prototype.tbs_setScroll2 = function(type, initValue, scrollName = 'scroll') {
+TbsGrid.prototype.tbs_setScroll2_0807 = function(type, initValue, scrollName = 'scroll') {
 	// function :
 	// @type : this.const_horizontal, this.const_vertical
 	// @initValue : 0, auto, undefined
@@ -337,6 +337,8 @@ TbsGrid.prototype.tbs_setScroll2 = function(type, initValue, scrollName = 'scrol
 		let headerRect = header.getBoundingClientRect();
 		let headerTableRect = headerTable.getBoundingClientRect();
 
+		// 1) table area >  panel area : scroll setting
+		// 2) table area <= panel area : scroll hidden
 		if (headerTableRect.width > headerRect.width) {
 			xScroll.style.display = '';
 			scrollBox.style.display = '';
@@ -350,19 +352,19 @@ TbsGrid.prototype.tbs_setScroll2 = function(type, initValue, scrollName = 'scrol
 			xScroll.style.display = 'none';
 			wrap.style.marginBottom = '0px';
 		}
+		// to be end function ??
 		if (xScroll.style.display == 'none' && yScroll.style.display == 'none') {
 			scrollBox.style.display = 'none';
 		}
-
 		//let rowHeight = this.rowHeight;
-		//let contentHeight = parseInt(document.querySelector(selector + ' .tbs-grid-panel30').getBoundingClientRect().height); //여기서 잘못 계산.
+		//let contentHeight = parseInt(document.querySelector(selector + ' .tbs-grid-panel30').getBoundingClientRect().height);
 		this.tbs_setPageRowCount();
 		let pageRowCount = this.pageRowCount;
 		let pageIntRowCount = this.pageIntRowCount;
 
 		let xBar = document.querySelector(selector + ' .tbs-grid-horizontal-scroll-bar');
 		//==================================================================
-		// tr의 갯수 조정(+,-)
+		// tr count control
 		//==================================================================
 		let leftTrList    = document.querySelectorAll(selector + ' .tbs-grid-panel31 tbody tr');
 		let contentTrList = document.querySelectorAll(selector + ' .tbs-grid-panel30 tbody tr');
@@ -458,6 +460,202 @@ TbsGrid.prototype.tbs_setScroll2 = function(type, initValue, scrollName = 'scrol
 			let yBar = document.querySelector(selector + ' .tbs-grid-vertical-scroll-bar');
 			yBar.style.top = '0px';	document.querySelector(selector + ' .tbs-grid-panel30').childNodes[0].style.left = '0px';
 		}
+	}
+}
+/**
+ * @function: tbs_setScroll2
+ *
+ * @Description :
+ * @Param Type grid.const_horizontal, grid.const_vertical
+ * @Param scrollName scroll, scroll2(horizontal, panel32), scroll6(vertical, panel60)
+ */
+TbsGrid.prototype.tbs_setScroll2 = function(type, scrollName = 'scroll') {
+	let selector = '#' + this.gridId;
+	let grid = this;
+
+	let xScroll = document.querySelector(selector + ' .tbs-grid-horizontal-scroll');
+	let yScroll = document.querySelector(selector + ' .tbs-grid-vertical-scroll');
+	let scrollBox = document.querySelector(selector + ' .tbs-grid-scroll-box');
+	let wrap = document.querySelector(selector + ' .tbs-grid-wrap');
+
+	if (type == this.const_horizontal) {
+		let header = document.querySelector(selector + ' .tbs-grid-panel20');
+		let headerTable = document.querySelector(selector + ' .tbs-grid-panel20 .tbs-grid-table');
+
+		let headerRect = header.getBoundingClientRect();
+		let headerTableRect = headerTable.getBoundingClientRect();
+
+		// 1) table area > panel area : scroll setting
+		if (headerTableRect.width > headerRect.width) grid.tbs_showScroll(type, scrollName);
+		else grid.tbs_hideScroll(type, scrollName);
+
+		// to be end function ??
+		//if (xScroll.style.display == 'none' && yScroll.style.display == 'none') {
+		//	scrollBox.style.display = 'none';
+		//}
+
+		//==================================================================
+		// table tr count control
+		//==================================================================
+		this.tbs_setPageRowCount();
+		let pageRowCount = this.pageRowCount;
+		let pageIntRowCount = this.pageIntRowCount;
+
+		let xBar = document.querySelector(selector + ' .tbs-grid-horizontal-scroll-bar');
+		let leftTrList    = document.querySelectorAll(selector + ' .tbs-grid-panel31 tbody tr');
+		let contentTrList = document.querySelectorAll(selector + ' .tbs-grid-panel30 tbody tr');
+		let len = leftTrList.length;
+		if (len == 0) return;
+
+		let leftTable = document.querySelector(selector + ' .tbs-grid-panel31 .tbs-grid-table');
+		let contentTable = document.querySelector(selector + ' .tbs-grid-panel30 .tbs-grid-table');
+		let leftCount = leftTrList.length;
+		let contentCount = contentTrList.length;
+
+		for (let i = 0; i < pageRowCount; i++) {
+			let leftTr = leftTrList[0].cloneNode(true);
+			let contentTr = contentTrList[0].cloneNode(true);
+
+			leftTable.childNodes[1].append(leftTr);
+			contentTable.childNodes[1].append(contentTr);
+		}
+		for (let i = 0; i < leftCount   ; i++) leftTable.deleteRow(-1);
+		for (let i = 0; i < contentCount; i++) contentTable.deleteRow(-1);
+	}
+	else if (type == this.const_vertical) {
+		let pageRowCount = this.pageRowCount;
+		let dataLength = this.data_panel30.length;
+
+		if (grid.fixedRowIndex != -1) {
+			dataLength = dataLength - (grid.fixedRowIndex + 1);
+
+			if (this.pageRowCount > this.pageIntRowCount) {
+				if (dataLength >= pageRowCount) {
+					yScroll.style.display = '';
+					scrollBox.style.display = '';
+					wrap.style.marginRight = this.scroll.margin;
+
+					this.tbs_setScrollSize(type);
+				} else {
+					yScroll.style.display = 'none';
+					scrollBox.style.display = 'none';
+					wrap.style.marginRight = '0px';
+				}
+			}
+			else {
+				if (dataLength > pageRowCount) {
+					yScroll.style.display = '';
+					scrollBox.style.display = '';
+					wrap.style.marginRight = this.scroll.margin;
+
+					this.tbs_setScrollSize(type);
+				} else {
+					yScroll.style.display = 'none';
+					scrollBox.style.display = 'none';
+					wrap.style.marginRight = this.scroll.margin;
+				}
+			}
+			if (xScroll.style.display == 'none' && yScroll.style.display == 'none') {
+				scrollBox.style.display = 'none';
+			}
+
+			let yBar = document.querySelector(selector + ' .tbs-grid-vertical-scroll-bar');
+			yBar.style.top = '0px';	document.querySelector(selector + ' .tbs-grid-panel30').childNodes[0].style.left = '0px';
+		}
+		else {
+			if (this.pageRowCount > this.pageIntRowCount) {
+				if (dataLength >= pageRowCount) {
+					yScroll.style.display = '';
+					scrollBox.style.display = '';
+					wrap.style.marginRight = this.scroll.margin;
+
+					this.tbs_setScrollSize(type);
+				} else {
+					yScroll.style.display = 'none';
+					scrollBox.style.display = 'none';
+					wrap.style.marginRight = '0px';
+				}
+			}
+			else {
+				if (dataLength > pageRowCount) {
+					yScroll.style.display = '';
+					scrollBox.style.display = '';
+					wrap.style.marginRight = this.scroll.margin;
+
+					this.tbs_setScrollSize(type);
+				} else {
+					yScroll.style.display = 'none';
+					scrollBox.style.display = 'none';
+					wrap.style.marginRight = this.scroll.margin;
+				}
+			}
+			if (xScroll.style.display == 'none' && yScroll.style.display == 'none') {
+				scrollBox.style.display = 'none';
+			}
+
+			let yBar = document.querySelector(selector + ' .tbs-grid-vertical-scroll-bar');
+			yBar.style.top = '0px';	document.querySelector(selector + ' .tbs-grid-panel30').childNodes[0].style.left = '0px';
+		}
+	}
+}
+/**
+ * @function tbs_setScroll2
+ *
+ * @Description
+ * @Param Type grid.const_horizontal, grid.const_vertical
+ * @Param scrollName scroll, scroll2(horizontal, panel32), scroll6(vertical, panel60)
+ */
+TbsGrid.prototype.tbs_showScroll = function(type, scrollName) {
+	let selector = '#' + this.gridId;
+	let grid = this;
+
+	if (type == this.const_horizontal) {
+		let xScroll = document.querySelector(selector + ' .tbs-grid-horizontal-scroll');
+		let yScroll = document.querySelector(selector + ' .tbs-grid-vertical-scroll');
+		let scrollBox = document.querySelector(selector + ' .tbs-grid-scroll-box');
+		let wrap = document.querySelector(selector + ' .tbs-grid-wrap');
+
+		xScroll.style.display = '';
+		scrollBox.style.display = '';
+		wrap.style.marginBottom = this.scroll.margin;
+		this.tbs_setScrollSize(type, scrollName);
+	}
+	else if (type == this.const_vertical) {
+
+	}
+}
+/**
+ * @function tbs_setHideScroll
+ *
+ * @Description
+ * @Param Type grid.const_horizontal, grid.const_vertical
+ */
+TbsGrid.prototype.tbs_hideScroll = function(type) {
+	let selector = '#' + this.gridId;
+	let grid = this;
+
+	if (type == this.const_horizontal) {
+		console.log(`tbs_hideScroll ${type}`);
+		let wrap = document.querySelector(selector + ' .tbs-grid-wrap');
+
+		let xScroll = document.querySelector(selector + ' .tbs-grid-horizontal-scroll');
+		let yScroll = document.querySelector(selector + ' .tbs-grid-vertical-scroll');
+		let scrollBox = document.querySelector(selector + ' .tbs-grid-scroll-box');
+		let xBar = document.querySelector(selector + ' .tbs-grid-horizontal-scroll-bar');
+
+		xScroll.style.display = 'none';
+		wrap.style.marginBottom = '0px';
+		if (xScroll.style.display == 'none' && yScroll.style.display == 'none') scrollBox.style.display = 'none';
+
+		document.querySelector(selector + ' .tbs-grid-horizontal-scroll-bar').style.left = '0px';
+		document.querySelector(selector + ' .tbs-grid-panel20 .tbs-grid-table').style.left = '0px';
+		document.querySelector(selector + ' .tbs-grid-panel30 .tbs-grid-table').style.left = '0px';
+		document.querySelector(selector + ' .tbs-grid-panel40 .tbs-grid-table').style.left = '0px';
+		document.querySelector(selector + ' .tbs-grid-panel50 .tbs-grid-table').style.left = '0px';
+		document.querySelector(selector + ' .tbs-grid-panel60 .tbs-grid-table').style.left = '0px';
+	}
+	else if (type == this.const_vertical) {
+
 	}
 }
 TbsGrid.prototype.tbs_setScrollSize = function(type) {

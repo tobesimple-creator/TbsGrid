@@ -1443,3 +1443,5 @@ TbsGrid.prototype.setRowHeight = function (rowHeight, type) {
 
     }
 }
+TbsGrid.prototype.selector = document.querySelector;
+TbsGrid.prototype.selectorAll = document.querySelectorAll;

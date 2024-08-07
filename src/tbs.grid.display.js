@@ -34,9 +34,6 @@ TbsGrid.prototype.tbs_displayPanel = function (panel, topRowIndex) {
     // }
 }
 TbsGrid.prototype.tbs_displayPanel20 = function() {
-    //=============================================================
-    // panel21, panel22, panel20 display
-    //=============================================================
     let selector = '#' + this.gridId;
     let grid = this;
 
@@ -44,7 +41,7 @@ TbsGrid.prototype.tbs_displayPanel20 = function() {
     //this.tbs_setDataTable({panelName: 'panel22'});
     this.tbs_setDataTable({panelName: 'panel20'});
 
-    this.tbs_displayHeaderDataFixCol();
+    //this.tbs_displayHeaderDataFixCol();
 }
 TbsGrid.prototype.tbs_displayPanel30 = function (topRowIndex) {
     let selector = '#' + this.gridId;
@@ -57,7 +54,7 @@ TbsGrid.prototype.tbs_displayPanel30 = function (topRowIndex) {
     this.tbs_setDataTable({ panelName: 'panel32', topRowIndex : topRowIndex });
 
     this.tbs_displayPanel60(0);
-    this.tbs_displaySelectedLine();
+    //this.tbs_displaySelectedLine();
 }
 TbsGrid.prototype.tbs_displayPanel30_merge = function (topRowIndex) {
     //=============================================================
@@ -1244,7 +1241,6 @@ TbsGrid.prototype.tbs_setSelectedRange = function (startRowIndex, lastRowIndex, 
     else {
         topRowIndex = (topRowIndex == undefined) ? this.tbs_getFirstRowIndex() : topRowIndex;
     }
-
     this.tbs_displayPanel30(topRowIndex);
 }
 TbsGrid.prototype.tbs_setSelectedRangeValue = function (startRowIndex, lastRowIndex, startCellIndex, lastCellIndex) {
@@ -1450,6 +1446,7 @@ TbsGrid.prototype.tbs_setDataTable1 = function (param) {
     let grid = this;
 
     let panelName = param.panelName;
+    if (panelName == 'panel61') { if (grid.fixedRowIndex == -1) return; }
 
     if (grid.fixedRowIndex != -1) {
         let topRowIndex = this.tbs_validateTopRowIndex(panelName, param.topRowIndex);
@@ -1618,6 +1615,17 @@ TbsGrid.prototype.tbs_setDataTable3 = function (param) {
     let grid = this;
 
     let panelName = param.panelName;
+    if (panelName == 'panel60') { if (grid.fixedRowIndex == -1) return; }
+
+    // th table cell
+    //let thTableCells = document.querySelectorAll(selector + ' .tbs-grid-' + panelName + ' .tbs-grid-table thead th');
+    //for (let i = 0, len = this.columns.length; i < len; i++) {
+    //    let tableCell = thTableCells[i];
+    //    let column = this.columns[i];
+    //    tableCell.style.width   = (column[grid.column_visible] == true) ? parseInt(column[grid.column_width]) + 'px' : '0px';
+    //    tableCell.style.display = (column[grid.column_visible] == true) ? '' : 'none';
+    //}
+
     let topRowIndex = this.tbs_validateTopRowIndex(panelName, param.topRowIndex);
     let bottomRowIndex = this.tbs_validateBottomRowIndex(panelName, topRowIndex);
 
@@ -1771,20 +1779,20 @@ TbsGrid.prototype.tbs_setDataHeaderTable3 = function(param) {
 
     let panelName = param.panelName;
     //=============================================================	 header th
-    let thList20 = document.querySelectorAll(selector + ' .tbs-grid-' + panelName + ' .tbs-grid-table thead th');
-    for (let i = 0, len = this.columns.length; i < len; i++) {
-        let column = this.columns[i];
-        if (this.fixedColumnIndex != -1) {
-            if (i <= this.fixedColumnIndex) {
-                thList20[i].style.width   = '0px';
-                thList20[i].style.display = 'none';
-            }
-        }
-        else {
-            thList20[i].style.width   = (column[grid.column_visible] == true) ? parseInt(column[grid.column_width]) + 'px' : '0px';
-            thList20[i].style.display = (column[grid.column_visible] == true) ? '' : 'none';
-        }
-    }
+    //let thList20 = document.querySelectorAll(selector + ' .tbs-grid-' + panelName + ' .tbs-grid-table thead th');
+    //for (let i = 0, len = this.columns.length; i < len; i++) {
+    //    let column = this.columns[i];
+    //    if (this.fixedColumnIndex != -1) {
+    //        if (i <= this.fixedColumnIndex) {
+    //            thList20[i].style.width   = '0px';
+    //            thList20[i].style.display = 'none';
+    //        }
+    //    }
+    //    else {
+    //        thList20[i].style.width   = (column[grid.column_visible] == true) ? parseInt(column[grid.column_width]) + 'px' : '0px';
+    //        thList20[i].style.display = (column[grid.column_visible] == true) ? '' : 'none';
+    //    }
+    //}
     //=============================================================	 header tr
     let tablesRows = document.querySelectorAll(selector + ' .tbs-grid-' + panelName + ' .tbs-grid-table tbody tr');
     if (this.fixedColumnIndex != -1){

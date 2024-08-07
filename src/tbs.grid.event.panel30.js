@@ -1,4 +1,4 @@
-/**
+﻿/**
  * tbs.grid.panel30.js
  *
  */
@@ -196,7 +196,7 @@ TbsGrid.prototype.panel30_select = function(eventPanelName) {
             let panelLeft  = absRect.left;
             let panelRight = absRect.left + rect.width;
 
-            console.log(`selectCellMove : lastX ${lastX} < panelLeft : ${panelLeft} > panelRight ${panelRight}`);
+            //console.log(`selectCellMove : lastX ${lastX} < panelLeft : ${panelLeft} > panelRight ${panelRight}`);
 
             // Outside the area
             if (lastX < panelLeft || lastX > panelRight || lastY < panelTop || lastY > panelBottom) {
@@ -259,7 +259,7 @@ TbsGrid.prototype.panel30_select = function(eventPanelName) {
             let maxRowIndex, maxCellIndex;
             maxRowIndex  = grid.tbs_getMaxRowIndexByMouseMove();
             maxCellIndex = grid.tbs_getMaxCellIndexByMouseMove();
-            console.log(`eventPanelName ${eventPanelName} 1) $maxRowIndex  ${maxRowIndex} maxCellIndex ${maxCellIndex}`);
+            //console.log(`eventPanelName ${eventPanelName} 1) $maxRowIndex  ${maxRowIndex} maxCellIndex ${maxCellIndex}`);
             grid.tbs_clearRange(0, -1);
             grid.tbs_selectedRange(startRowIndex, maxRowIndex, startCellIndex, maxCellIndex);
         }
@@ -267,7 +267,7 @@ TbsGrid.prototype.panel30_select = function(eventPanelName) {
             let maxRowIndex, minCellIndex;
             maxRowIndex  = grid.tbs_getMaxRowIndexByMouseMove();
             minCellIndex = grid.tbs_getMinCellIndexByMouseMove();
-            console.log(`eventPanelName ${eventPanelName} 2) $maxRowIndex  ${maxRowIndex} minCellIndex ${minCellIndex}`);
+            //console.log(`eventPanelName ${eventPanelName} 2) $maxRowIndex  ${maxRowIndex} minCellIndex ${minCellIndex}`);
             grid.tbs_clearRange(0, -1);
             grid.tbs_selectedRange(startRowIndex, maxRowIndex, startCellIndex, minCellIndex);
         }
@@ -275,7 +275,7 @@ TbsGrid.prototype.panel30_select = function(eventPanelName) {
             let minRowIndex, maxCellIndex;
             minRowIndex = grid.tbs_getMinRowIndexByMouseMove();
             maxCellIndex= grid.tbs_getMaxCellIndexByMouseMove();
-            console.log(`eventPanelName ${eventPanelName}  3) minRowIndex ${minRowIndex} maxCellIndex ${maxCellIndex}`);
+            //console.log(`eventPanelName ${eventPanelName}  3) minRowIndex ${minRowIndex} maxCellIndex ${maxCellIndex}`);
             grid.tbs_clearRange(0, -1);
             grid.tbs_selectedRange(startRowIndex, minRowIndex, startCellIndex, maxCellIndex);
         }
@@ -283,7 +283,7 @@ TbsGrid.prototype.panel30_select = function(eventPanelName) {
             let minRowIndex, minCellIndex;
             minRowIndex = grid.tbs_getMinRowIndexByMouseMove();
             minCellIndex= grid.tbs_getMinCellIndexByMouseMove();
-            console.log(`eventPanelName ${eventPanelName} 4)  minRowIndex ${minRowIndex} minCellIndex ${minCellIndex}`);
+            //console.log(`eventPanelName ${eventPanelName} 4)  minRowIndex ${minRowIndex} minCellIndex ${minCellIndex}`);
             grid.tbs_clearRange(0, -1);
             grid.tbs_selectedRange(startRowIndex, minRowIndex, startCellIndex, minCellIndex);
         }

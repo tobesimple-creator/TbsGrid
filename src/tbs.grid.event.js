@@ -1,4 +1,4 @@
-/**
+﻿/**
  * tbs.grid.event.js
  *
  */
@@ -159,40 +159,52 @@ TbsGrid.prototype.event_mobileTouchDrag = function() { //type : header, content
 	//--------------------------------------------------------------
 	//document.querySelector(selector + ' .tbs-grid-panel30').addEventListener('touchstart', touchStartEvent, false);
 }
+/**
+ * function : event_columnResize
+ * @description column resize
+ *
+ * @param panelName
+ */
 TbsGrid.prototype.event_columnResize = function(panelName) {
     let selector = '#' + this.gridId;
     let grid = this;
-    const createResizableColumn = function (col, resizer) {
-        let x = 0;
-        let w = 0;
+    const createResizableColumn = function (tableCell, resizer) {
+        let startX     = 0; // mouse start x position
+        let movedWidth = 0; // moved width
+        let cellWidth  = 0; // header cell width
         let tableWidth = 0;
-        let dx = 0;
+
         let initWidth = [];
         let childList = [];
-        let eventDetail = 0;
+
+        let eventDetail = 0; // 1 : click (resize), 2 : dblclick(auto resize)
         const mouseDownEvent = function (e) {
             eventDetail = e.detail;
-            if (eventDetail == 1){
+            if (eventDetail == 1) {
                 e.stopPropagation();
                 if (grid.options[grid.option_resizable] == false) return;
 
-                x = e.clientX;
-                const style = window.getComputedStyle(col);
-                w = parseInt(style.width, 10);
+                startX =  window.pageXOffset + e.clientX;
+
+                const style = window.getComputedStyle(tableCell);
+                cellWidth = parseInt(style.width, 10);
                 tableWidth = parseInt(document.querySelector(selector + ' .tbs-grid-' + panelName + ' .tbs-grid-table').getBoundingClientRect().width);
+
                 resizer.classList.add('.tbs-grid-cell-resizing');
-                if (col.dataset.id == '') {
-                    let colIndex = col.cellIndex;
-                    let lastColIndex = colIndex + col.colSpan;
+
+                if (tableCell.dataset.id == '') {
+                    let cellIndex = tableCell.cellIndex;
+                    let lastCellIndex = cellIndex + tableCell.colSpan;
 
                     childList = [];
                     initWidth = [];
-                    for (let i = colIndex; i < lastColIndex; i++) childList.push(i);
 
-                    let colList = document.querySelectorAll(selector  + ' .tbs-grid-' + panelName + ' .tbs-grid-table thead th');
-                    for (let i = colIndex; i < lastColIndex; i++) {
-                        let width = parseInt(colList[i].style.width, 10);
-                        initWidth.push(width);
+                    let thCells = document.querySelectorAll(selector  + ' .tbs-grid-' + panelName + ' .tbs-grid-table thead th');
+                    for (let i = cellIndex; i < lastCellIndex; i++) {
+                        let thCell= thCells[i];
+                        let width = parseInt(thCell.style.width, 10);
+                        childList.push(i);     // cell index
+                        initWidth.push(width); // cell width
                     }
                 }
                 document.addEventListener('mousemove', mouseMoveEvent);
@@ -244,49 +256,51 @@ TbsGrid.prototype.event_columnResize = function(panelName) {
         const mouseMoveEvent = function (e) {
             if (eventDetail == 1){
                 e.stopPropagation();
-                if (grid.options[grid.option_resizable] == false) return;
-                dx = e.clientX - x;
-
+                movedWidth = e.clientX - startX;
+                //content
                 let thList20 = document.querySelectorAll(selector + ' .tbs-grid-panel20 .tbs-grid-table thead th');
                 let thList30 = document.querySelectorAll(selector + ' .tbs-grid-panel30 .tbs-grid-table thead th');
                 let thList60 = document.querySelectorAll(selector + ' .tbs-grid-panel60 .tbs-grid-table thead th');
                 let thList40 = document.querySelectorAll(selector + ' .tbs-grid-panel40 .tbs-grid-table thead th');
                 let thList50 = document.querySelectorAll(selector + ' .tbs-grid-panel50 .tbs-grid-table thead th');
-
+                //frozen column content
                 let thList22 = document.querySelectorAll(selector + ' .tbs-grid-panel22 .tbs-grid-table thead th');
                 let thList32 = document.querySelectorAll(selector + ' .tbs-grid-panel32 .tbs-grid-table thead th');
                 let thList62 = document.querySelectorAll(selector + ' .tbs-grid-panel62 .tbs-grid-table thead th');
                 let thList42 = document.querySelectorAll(selector + ' .tbs-grid-panel42 .tbs-grid-table thead th');
                 let thList52 = document.querySelectorAll(selector + ' .tbs-grid-panel52 .tbs-grid-table thead th');
 
-                if (col.dataset.id == '') {
+                if (tableCell.dataset.id == '') {
+                    // blank header cell
                     let count = childList.length;
-                    let moveWidth = parseInt(dx/count);
+                    let moveWidth = parseInt(movedWidth/count);
                     for (let i = 0, len = childList.length; i < len; i++) {
-                        let colIndex = childList[i];
+                        let cellIndex = childList[i];
                         let nWidth = (initWidth[i] + moveWidth) < 10 ? 10 : (initWidth[i] + moveWidth) + 'px';
 
-                        grid.columns[colIndex][grid.column_width] = nWidth;
+                        let column = grid.columns[tableCell.cellIndex];
+                        column[grid.column_width] = parseInt(nWidth, 10);
 
-                        thList20[colIndex].style.width = nWidth;
-                        thList30[colIndex].style.width = nWidth;
-                        if (grid.fixedRowIndex        != -1) thList60[colIndex].style.width = nWidth;
-                        if (grid.topColumns.length    >  0) thList40[colIndex].style.width = nWidth;
-                        if (grid.footerColumns.length >  0) thList50[colIndex].style.width = nWidth;
+                        thList20[cellIndex].style.width = nWidth;
+                        thList30[cellIndex].style.width = nWidth;
+                        if (grid.fixedRowIndex        != -1) thList60[cellIndex].style.width = nWidth;
+                        if (grid.topColumns.length    >   0) thList40[cellIndex].style.width = nWidth;
+                        if (grid.footerColumns.length >   0) thList50[cellIndex].style.width = nWidth;
                     }
                 }
                 else {
-                    let colIndex = col.cellIndex;
-                    let nWidth = ((w + dx) < 10 ? 10 : (w + dx)) + 'px';
-                    grid.columns[col.cellIndex][grid.column_width] = parseInt(nWidth, 10);
-                    thList20[colIndex].style.width = nWidth;
-                    thList30[colIndex].style.width = nWidth;
-                    if (grid.fixedRowIndex        != -1) thList60[colIndex].style.width = nWidth;
-                    if (grid.topColumns.length    > 0) thList40[colIndex].style.width = nWidth;
-                    if (grid.footerColumns.length > 0) thList50[colIndex].style.width = nWidth;
+                    let cellIndex = tableCell.cellIndex;
+                    let nWidth = ((cellWidth + movedWidth) < 10 ? 10 : (cellWidth + movedWidth)) + 'px';
+                    let column = grid.columns[tableCell.cellIndex];
+                    column[grid.column_width] = parseInt(nWidth, 10);
+
+                    thList20[cellIndex].style.width = nWidth;
+                    thList30[cellIndex].style.width = nWidth;
+                    if (grid.fixedRowIndex        != -1) thList60[cellIndex].style.width = nWidth;
+                    if (grid.topColumns.length    >   0) thList40[cellIndex].style.width = nWidth;
+                    if (grid.footerColumns.length >   0) thList50[cellIndex].style.width = nWidth;
                 }
                 grid.tbs_setScroll(grid.const_horizontal);
-                grid.tbs_setScroll(grid.const_vertical);
                 grid.tbs_displayPanel30(grid.tbs_getFirstRowIndex());
             }
         };
@@ -773,6 +787,11 @@ TbsGrid.prototype.tbs_executeEvent = function(isUserFunction, eventType, param) 
         }
     }
 }
+/**
+ * tbs_getMaxRowIndexByMouseMove
+ *
+ * @returns max rowIndex
+ */
 TbsGrid.prototype.tbs_getMaxRowIndexByMouseMove = function() {
     let selector = '#' + this.gridId;
     let grid = this;
@@ -951,7 +970,7 @@ TbsGrid.prototype.tbs_getMinRowIndexByMouseMove2 = function(panelName) {
         let rect = grid.tbs_getOffset(tableRow);
         let bottom = rect.top + tableRow.getBoundingClientRect().height;
         if (lastY < bottom) minRowIndex = grid.tbs_getRowIndexInTable(tableRowIndex, panelName);
-        console.log(`${panelName} i ${i} : startRowIndex ${startRowIndex} lastRowIndex ${lastRowIndex} : minRowIndex ${minRowIndex}  bottom ${bottom} : lastY  ${this.lastY}`);
+        //console.log(`${panelName} i ${i} : startRowIndex ${startRowIndex} lastRowIndex ${lastRowIndex} : minRowIndex ${minRowIndex}  bottom ${bottom} : lastY  ${this.lastY}`);
     }
     return minRowIndex;
 }
@@ -1224,7 +1243,6 @@ TbsGrid.prototype.tbs_moveCell = function (type) { //type : left, right, up, dow
             this.tbs_setBarPosition(this.const_vertical, dataRowIndex);
             return;
         }
-        //==========================================================================
         if (this.pageRowCount > this.pageIntRowCount) {
             if (tableRows.length == this.pageRowCount) { //table에 데이타가 찼을 경우
                 if (dataRowIndex == lastRowIndex) { //table의 마지막행일 경우
@@ -1265,7 +1283,6 @@ TbsGrid.prototype.tbs_moveCell = function (type) { //type : left, right, up, dow
                 }
             }
         }
-        //==========================================================================
         else { //해당 경우 거의 없을듯 - 딱 떨어질 경우 테스트 필요 추후
             if (tableRows.length == this.pageRowCount) { //table에 데이타가 찼을 경우
                 if (dataRowIndex == lastRowIndex) { //table의 마지막행일 경우
