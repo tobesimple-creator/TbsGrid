@@ -902,35 +902,37 @@ TbsGrid.prototype.tbs_removeFrozenColumn = function() {
     let selector = '#' + this.gridId;
     let grid = this;
 
-    let header    = document.querySelector(selector + ' .tbs-grid-panel20 .tbs-grid-table');
-    let content   = document.querySelector(selector + ' .tbs-grid-panel30 .tbs-grid-table');
-    let sum       = document.querySelector(selector + ' .tbs-grid-panel40 .tbs-grid-table');
-    let footer    = document.querySelector(selector + ' .tbs-grid-panel50 .tbs-grid-table');
+    let table20  = document.querySelector(selector + ' .tbs-grid-panel20 .tbs-grid-table');
+    let table30  = document.querySelector(selector + ' .tbs-grid-panel30 .tbs-grid-table');
+    let table40  = document.querySelector(selector + ' .tbs-grid-panel40 .tbs-grid-table');
+    let table50  = document.querySelector(selector + ' .tbs-grid-panel50 .tbs-grid-table');
 
-    let fixTop    = document.querySelector(selector + ' .tbs-grid-panel22    ');
-    let fixBottom = document.querySelector(selector + ' .tbs-grid-panel32 ');
-    let fixSum    = document.querySelector(selector + ' .tbs-grid-panel42 	');
-    let fixFooter = document.querySelector(selector + ' .tbs-grid-panel52	');
+    let panel22 = document.querySelector(selector + ' .tbs-grid-panel22');
+    let panel32 = document.querySelector(selector + ' .tbs-grid-panel32');
+    let panel42 = document.querySelector(selector + ' .tbs-grid-panel42');
+    let panel52 = document.querySelector(selector + ' .tbs-grid-panel52');
 
-    let dc = this.columns;
+    let columns = this.columns;
     let fixedColumnIndex = this.fixedColumnIndex + 1;
     colIndex = fixedColumnIndex;
 
-    fixTop.childNodes[0].innerHTML = '';
-    fixBottom.childNodes[0].innerHTML= '';
-    fixSum.childNodes[0].innerHTML 	 = '';
-    fixFooter.childNodes[0].innerHTML = '';
-    fixTop.style = 'width:0px;';
-    fixBottom.style = 'width:0px;';
-    fixSum.style = 'width:0px;';
-    fixFooter.style = 'width:0px;';
-    //============================================================= header
+    panel22.childNodes[0].innerHTML = '';
+    panel32.childNodes[0].innerHTML = '';
+    panel42.childNodes[0].innerHTML = '';
+    panel52.childNodes[0].innerHTML = '';
+
+    panel22.style = 'width:0px;';
+    panel32.style = 'width:0px;';
+    panel42.style = 'width:0px;';
+    panel52.style = 'width:0px;';
+
+    //============================================================= table20
     let sumWidth = 0;
-    for (let x = 0; x < dc.length; x++){
-        sumWidth += parseInt(dc[x].width, 10);
+    for (let x = 0; x < columns.length; x++){
+        sumWidth += parseInt(columns[x].width, 10);
     }
 
-    let table   = header;
+    let table   = table20;
     let trList  = table.querySelectorAll('tbody tr');
     let colList = table.querySelectorAll('thead th');
 
@@ -938,12 +940,12 @@ TbsGrid.prototype.tbs_removeFrozenColumn = function() {
         for (let x = 0; x < colIndex; x++){
             trList[i].childNodes[x].style.display = '';
             colList[x].style.display = '';
-            colList[x].style.width = dc[x].width + 'px';
+            colList[x].style.width = columns[x].width + 'px';
         }
     }
     //table.style.width = sumWidth + 'px';
-    //============================================================= fix Bottom
-    table   = content;
+    //============================================================= table30
+    table   = table30;
     trList  = table.querySelectorAll('tbody tr');
     colList = table.querySelectorAll('thead th');
 
@@ -951,13 +953,13 @@ TbsGrid.prototype.tbs_removeFrozenColumn = function() {
         for (let x = 0; x < colIndex; x++){
             trList[i].childNodes[x].style.display = '';
             colList[x].style.display = '';
-            colList[x].style.width = dc[x].width + 'px';
+            colList[x].style.width = columns[x].width + 'px';
         }
     }
     //table.style.width = sumWidth + 'px';
-    //============================================================= fix sum
-    if (sum != null) {
-        let table   = sum;
+    //============================================================= table40
+    if (table40 != null) {
+        let table   = table40;
         let trList  = table.querySelectorAll('tbody tr');
         let colList = table.querySelectorAll('thead th');
 
@@ -965,14 +967,14 @@ TbsGrid.prototype.tbs_removeFrozenColumn = function() {
             for (let x = 0; x < colIndex; x++){
                 trList[i].childNodes[x].style.display = '';
                 colList[x].style.display = '';
-                colList[x].style.width = dc[x].width + 'px';
+                colList[x].style.width = columns[x].width + 'px';
             }
         }
         //table.style.width = sumWidth + 'px';
     }
-    //============================================================= fix footer
-    if (footer != null) {
-        let table   = footer;
+    //============================================================= table50
+    if (table50 != null) {
+        let table   = table50;
         let trList  = table.querySelectorAll('tbody tr');
         let colList = table.querySelectorAll('thead th');
 
@@ -980,37 +982,32 @@ TbsGrid.prototype.tbs_removeFrozenColumn = function() {
             for (let x = 0; x < colIndex; x++){
                 trList[i].childNodes[x].style.display = '';
                 colList[x].style.display = '';
-                colList[x].style.width = dc[x].width + 'px';
+                colList[x].style.width = columns[x].width + 'px';
             }
         }
         //table.style.width = sumWidth + 'px';
     }
-    //=============================================================
-    let line = document.querySelector(selector + ' .tbs-grid-fix-col-line');
-    line.style.top    = '0px';
-    line.style.left   = '0px';
-    line.style.width  = '0px';
-    line.style.height = '0px';
-    //=============================================================
     this.fixedColumnIndex = -1;
     this.tbs_setPanelSize();
     this.tbs_displayPanel20();
+    this.tbs_displayPanel30(0);
 }
 TbsGrid.prototype.tbs_removeFrozenRow = function() {
     let selector = '#' + this.gridId;
     let grid = this;
 
     this.fixedRowIndex = -1;
+    this.fixedRowCount = 0;
 
-    let fixLeft   = document.querySelector(selector + ' .tbs-grid-panel61   ');
-    let fixRight  = document.querySelector(selector + ' .tbs-grid-panel60  ');
+    let panel61= document.querySelector(selector + ' .tbs-grid-panel61');
+    let panel60= document.querySelector(selector + ' .tbs-grid-panel60');
 
-    fixLeft.childNodes[0].innerHTML = '';
-    fixRight.childNodes[0].innerHTML= '';
-    //=============================================================
+    panel61.childNodes[0].innerHTML = '';
+    panel60.childNodes[0].innerHTML = '';
+
     this.tbs_setPanelSize();
     this.tbs_setScroll(this.const_horizontal);
-    this.tbs_setScroll('content');
+    this.tbs_setScroll(this.const_vertical);
     this.tbs_displayPanel30(0);
 }
 //================================================================

@@ -120,7 +120,8 @@ TbsGrid.prototype.setFooterColumns = function (footerColumns) {
 TbsGrid.prototype.setFrozenColumn = function(fixedColumnIndex) {
     this.tbs_setFrozenColumn(fixedColumnIndex);
 }
-TbsGrid.prototype.setFrozenRow = function(fixedRowIndex, fixedRowCount) {
+TbsGrid.prototype.setFrozenRow = function(fixedRowIndex) {
+    let fixedRowCount = fixedRowIndex + 1;
     this.tbs_setFrozenRow(fixedRowIndex, fixedRowCount);
 }
 TbsGrid.prototype.removeFrozenColumn = function() {
