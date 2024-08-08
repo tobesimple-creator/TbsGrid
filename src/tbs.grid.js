@@ -6,12 +6,23 @@ TbsGrid = function (gridId) {
 	this.gridId = gridId;
 	this.maxRowId = -1; // maxRowId
 
-	this.debug_mode           = true    ;
-	//================================================================
-	//
-	// const
-	//
-	//================================================================
+	this.debug_mode           = true;
+	/**
+	 * @description code
+	 *
+	 */
+	this.code_grid           = '';
+	this.code_tree           = 'tree';
+	this.code_pivot          = 'pivot';
+	this.code_group          = 'group';
+
+	/**
+	 * @description constance
+	 *
+	 */
+	this.const_grid_mode      = ''; //'', tree, pivot, group
+	this.const_data_mode      = ''; //'', part(for tree grid)
+
 	this.const_mode           = '_mode' ;
 	this.const_rowId          = '_rowId';
 	this.const_toolbar        = 'toolbar' ;
@@ -113,11 +124,10 @@ TbsGrid = function (gridId) {
 	this.option_checkBoxWidth = 'checkBoxWidth';
 	this.option_useToolbar	  = 'useToolbar'   ;
 
-	//================================================================
-	//
-	// Columns
-	//
-	//================================================================
+	/**
+	 * @description Columns
+	 *
+	 */
 	this.sortColumns = []; 		//[{ id : 'layout', order : 'asc'}, { id : 'layout', order : 'asc'}]
 	this.groupColumns = [];		//[{ id : 'layout'}, { id : 'layout']
 	this.groupView = [];
@@ -128,13 +138,12 @@ TbsGrid = function (gridId) {
 	this.footerColumns = [];
 	this.headerRowCount = 0;
 
-	//================================================================
-	//
-	// Sptions
-	//
-	//================================================================
+	/**
+	 * @description Options
+	 *
+	 */
 	this.options = {}
-	this.options[this.option_selectMode]   = 'cells';	//@value : cell, cells(default), row, rows
+	this.options[this.option_selectMode]   = 'cells';	//@value : cell, cells(default) // row, rows : unnessary
 	this.options[this.option_dateChar]     = '.'; 		//== date option
 	this.options[this.option_addRow]       = false; 	//== row option
 	this.options[this.option_delRow]       = false;
@@ -160,35 +169,45 @@ TbsGrid = function (gridId) {
 	this.grid_mousePointRange = 5;
 	this.grid_event = '';
 	this.popupActive = 0;
+
+	// //================================================================
+	// //
+	// // tree grid : key, parentKey, rootKey, sortColumn = [{id, asc}, {name, desc}]
+	// //
+	// //================================================================
+	// this.treeGrid = {};
+	// this.treeGrid.childColumnId;
+	// this.treeGrid.parentColumnId;
+	// this.treeGrid.rootValue;
+	// this.sortColumn = [];
 	//================================================================
-	//
-	// tool bar
-	//
-	//================================================================
+	/**
+	 * @description tool bar
+	 *
+	 */
 	this.toolbar_filter_placeholder = 'Search'; //Integrated filter(space key unit)
 	this.toolbar_visible = true;
 
 	//================================================================
 	//
 	// frozen row, column (fixRow : fixedRowCount, fixCol : fixedColumnIndex)
-	//
-	//================================================================
+	/**
+	 * @description layout
+	 *
+	 */
 	this.fixedColumnIndex = -1;
 	this.fixedRowCount = 0;  // required
 	this.fixedRowIndex = -1;
-	//================================================================
-	//
-	// merge
-	//
-	//================================================================
+	/**
+	 * @description merge
+	 *
+	 */
 	this.merge = false;
 	this.mergeType = 0;
-
-	//================================================================
-	//
-	// data
-	//
-	//================================================================
+	/**
+	 * @description data
+	 *
+	 */
 	this.data_provider   	 = []; //User Data
 	this.data_source 	 	 = []; //Conversion Data, fixed data, filter, sort가 되더라도 남는 data, 수정, 삭제 발생시 사용
 
@@ -201,50 +220,24 @@ TbsGrid = function (gridId) {
 	this.data_select_panel41 = [];
 	this.data_select_panel50 = [];
 	this.data_select_panel51 = [];
-	//================================================================
-	//
-	// layout
-	//
-	//================================================================
+	/**
+	 * @description layout
+	 *
+	 */
 	this.layout_source 	 	 = []; //Conversion Data, fixed data, filter, sort가 되더라도 남는 data, 수정, 삭제 발생시 사용
 	this.layout_panel30  	 = []; //content data
-
-	//================================================================
-	//
-	// insert, delete, update Data
-	//
-	//================================================================
+	/**
+	 * @description insert, delete, update Data
+	 *
+	 */
 	this.data_update = [];	//값이 변경된 데이타
 	this.data_insert = [];	//신규 데이타
 	this.data_delete = [];	//삭제 데이타. push 순으로 올라오겠지.
 
-	/*
-	tbs_getRemoveRows();
-	tbs_getAddRows();
-
-	* MODE : I, U, D
-	* CTRL + Z, CTRL + Y
-	* rowId : currentRowId 활용
-	0. 히스토리 관리를 하자는 거지.
-		ㄴ MODE : I, U, D
-		ㄴ INSERT : ROW 전체
-		ㄴ UPDATE : 변경된  COLUMN 만
-		ㄴ DELETE : rowId 만.
-	1. 수정
-		ㄴ 삭제 후 수정
-		ㄴ
-	2. 삭제
-		ㄴ 변경 후 삭제
-		ㄴ 삭제
-	3. 신규
-		ㄴ rowSeq 관리 할 것.
-	*/
-
-	//================================================================
-	//
-	// Row Count / Select Range
-	//
-	//================================================================
+	/**
+	 * @description Row Count / Select Range
+	 *
+	 */
 	this.pageRowCount = 0;	 	// 몫 + 나머지(나머지를 1로 본다)
 	this.pageIntRowCount = 0; 	// 몫만 본다.
 
@@ -272,12 +265,10 @@ TbsGrid = function (gridId) {
 	this.startY = 0;
 	this.lastX = 0;
 	this.lastY = 0;
-
-	//================================================================
-	//
-	// scroll
-	//
-	//================================================================
+	/**
+	 * @description scroll
+	 *
+	 */
 	this.scroll = {};
 	this.scroll.yBarSize 	= 0;
 	this.scroll.yRailSize 	= 0;
@@ -288,44 +279,41 @@ TbsGrid = function (gridId) {
 	this.scroll.xRailSize 	= 0;
 	this.scroll.xHiddenSize = 0;
 
-	//================================================================
-	//
-	// user event
-	//
-	//================================================================
+	/**
+	 * @description user event
+	 *
+	 */
 	this.user_click		 = [];
 	this.user_dblclick	 = [];
 	this.user_keydown	 = [];
 	this.user_keyup		 = [];
 	this.user_blur		 = [];
 	this.user_edit       = '';
-	//================================================================
-	//
-	// constant value
-	//
-	//================================================================
+	/**
+	 * @description constant value
+	 *
+	 */
 	this.TBS_PATH = '#' + this.gridId;
 	this.headerRowHeight = 25;
 	this.rowHeight       = 25;
 	this.sumRowHeight    = 25;
 	this.footerRowHeight = 25;
-	//================================================================
-	//
-	// calendar, date class
-	//
-	//================================================================
+	/**
+	 * @description Grid Object : tree, pivio, group, calendar, date
+	 *
+	 */
 	this.tbsGridDate;
 	this.tbsGridCombo;
-	//================================================================
-	//
-	// mobile, user agent
-	//
-	//================================================================
+	this.pivot;  // this.tbsGridPivot;
+	this.tree;	 // this.tbsGridTree;
+	this.group;	 // this.tbsGridGroup;
+	this.filter; // this.tbsGridFilter;
+	/**
+	 * @description mobile, user agent
+	 *
+	 */
 	this.md = new MobileDetect(window.navigator.userAgent);
 	this.mobile = this.md.mobile(); // not mobile : null
 	this.userAgent = this.md.userAgent(); // safari
-
-
-
 }
 

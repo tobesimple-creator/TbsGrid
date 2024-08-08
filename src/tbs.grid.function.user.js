@@ -27,10 +27,19 @@ TbsGrid.prototype.setToolbar = function (toolbar) {
 TbsGrid.prototype.setGrid = function (columns, options) {
     this.tbs_setGrid(columns, options);
 }
+/**
+ * @function setData
+ *
+ * @description set data or set cell data
+ * @param object : column object or json data
+ * @param id
+ * @param value
+ */
 TbsGrid.prototype.setData = function (object, id, value) {
     if (arguments.length == 1) this.tbs_setGridData(object);
     if (arguments.length == 3) this.tbs_setData(object, id, value)
 }
+
 //======================================================
 //
 // column, rows
@@ -131,4 +140,37 @@ TbsGrid.prototype.removeFrozenRow = function() {
     this.tbs_removeFrozenRow();
 }
 
-
+/** ==========================================================
+ *
+ * Tree Functions
+ *
+ * ==========================================================*/
+TbsGrid.prototype.setTreeOption = function (property, value) {
+    if (this.tree) this.tree.tbs_setTreeOption(property, value);
+    else {
+        this.tree = new TbsGridTree(this);
+        this.tree.tbs_setTreeOption(property, value);
+    }
+}
+TbsGrid.prototype.setTreeOptions = function (options) {
+    if (this.tree) this.tree.tbs_setTreeOptions(options);
+    else {
+        this.tree = new TbsGridTree(this);
+        this.tree.tbs_setTreeOptions(options);
+    }
+}
+TbsGrid.prototype.setTreeData = function (data, isPartData= false) {
+    if (this.tree) this.tree.tbs_setTreeData(data, isPartData);
+    else {
+        this.tree = new TbsGridTree(this);
+        this.tree.tbs_setTreeData(data, isPartData);
+    }
+}
+TbsGrid.prototype.setTreeSortColumn = function (sortColumn) {
+    if (this.tree)
+        this.tree.tbs_setTreeSortColumns(sortColumn);
+    else {
+        this.tree = new TbsGridTree(this);
+        this.tree.tbs_setTreeSortColumns(sortColumn);
+    }
+}

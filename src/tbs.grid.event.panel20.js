@@ -23,11 +23,11 @@ TbsGrid.prototype.panel20_select = function() { //type : header, content, left, 
     let moveCellRowIndex;
 
     let table = document.querySelector(selector + ' .tbs-grid-panel20 .tbs-grid-table');
-    //moveDiv(table), moveCell, targetCell, direction => moveDiv(카피본)와 tbs_moveCell(원본)은 다르다
+    //moveDiv(table), moveCell, targetCell, direction => moveDiv(copy object), tbs_moveCell(source object) is different
     const mouseDownEvent = function(e) {
         let col = e.target.closest('.tbs-grid-cell');
 
-        startX = window.pageXOffset + e.clientX; //절대좌표
+        startX = window.pageXOffset + e.clientX;
         startY = window.pageYOffset + e.clientY;
 
         lastX = window.pageXOffset + e.clientX;
@@ -75,12 +75,11 @@ TbsGrid.prototype.panel20_select = function() { //type : header, content, left, 
             }
         }
         else {
-            //==================================================================
             const changeColumnOrder = function() {
                 let trList = document.querySelectorAll(selector + ' .tbs-grid-panel20 .tbs-grid-table tbody tr');
-                let dc = grid.columns;
+                let columns = grid.columns;
                 let rowLen = trList.length;
-                let colLen = dc.length;
+                let colLen = columns.length;
                 let arr = [];
                 for (let x = 0; x < colLen; x++) {
                     for (let i = 0; i < rowLen; i ++) {
@@ -92,7 +91,7 @@ TbsGrid.prototype.panel20_select = function() { //type : header, content, left, 
                 let colList = [];
                 for (let i = 0, len = arr.length; i < len; i++){
                     for (let x = 0; x < colLen; x++){
-                        if (arr[i] == dc[x][grid.column_id]) { colList.push(JSON.parse(JSON.stringify(dc[x]))); break; }
+                        if (arr[i] == columns[x][grid.column_id]) { colList.push(JSON.parse(JSON.stringify(columns[x]))); break; }
                     }
                 }
                 grid.columns = JSON.parse(JSON.stringify(colList)); 
@@ -100,96 +99,95 @@ TbsGrid.prototype.panel20_select = function() { //type : header, content, left, 
             const changeHeaderColumnOrder = function(moveCell, targetCell, direction) { //2022.05.11
                 const splice = function(arr, copyArr, selectIndex, targetIndex, direction) {
                     if (direction == 'after') targetIndex += 1;
-                    arr.splice(targetIndex, 0, JSON.parse(JSON.stringify(copyArr[selectIndex]))); //splice 함수는 before 함수
-                    for (let x = 0, colLen = arr.length; x < colLen; x++) { //colIndex 재조정
+                    arr.splice(targetIndex, 0, JSON.parse(JSON.stringify(copyArr[selectIndex]))); //splice  before function
+                    for (let x = 0, colLen = arr.length; x < colLen; x++) {
                         arr[x].colIndex = x;
                     }
                 }                             
-                let hc = grid.headerColumns;
-                let moveCol = hc[moveCell.parentNode.rowIndex - 1][moveCell.cellIndex];//th때문에 rowIndex -1 감소
+                let headerColumns = grid.headerColumns;
+                let movingHeaderColumn = headerColumns[moveCell.parentNode.rowIndex - 1][moveCell.cellIndex];
 
-                let startRowIndex = moveCol[grid.column_rowindex];
+                let startRowIndex = movingHeaderColumn[grid.column_rowindex];
                 let lastRowIndex  = grid.headerColumns.length - 1;
 
-                let startColIndex = moveCol.colIndex;
+                let startColIndex = movingHeaderColumn[grid.column_colindex];
                 let lastColIndex  = startColIndex + moveCell.colSpan - 1;    
 
                 let targetColIndex = (direction == 'after') ? targetCell.cellIndex + targetCell.colSpan - 1 : targetCell.cellIndex;
-                let copyHeaderColumn = JSON.parse(JSON.stringify(grid.headerColumns));//순서유지를 위해 원본 필요
+                let copyHeaderColumns = JSON.parse(JSON.stringify(grid.headerColumns));
                 for (let i = startRowIndex; i <= lastRowIndex; i++) { 
                     for (let x = lastColIndex; x >= startColIndex; x--) { 
-                        splice(hc[i], copyHeaderColumn[i], x, targetColIndex, direction); //targetColIndex는 변하지 않음
+                        splice(headerColumns[i], copyHeaderColumns[i], x, targetColIndex, direction);
                     } 
                 }  
                 for (let i = startRowIndex; i <= lastRowIndex; i++) {
-                    let delIndex = (targetColIndex < startColIndex) ? startColIndex + moveCell.colSpan : startColIndex; 
-                    hc[i].splice(delIndex, moveCell.colSpan);
+                    let delIndex = (targetColIndex < startColIndex) ? startColIndex + moveCell.colSpan : startColIndex;
+                    headerColumns[i].splice(delIndex, moveCell.colSpan);
                     for (let x = 0, colLen = grid.columns.length; x < colLen; x++) {
-                        grid.headerColumns[i][x].colIndex = x;
+                        console.log(`i ${i} x ${x}`);
+                        grid.headerColumns[i][x][grid.column_colindex] = x;
                     }                        
                 }                        
             }
-            //==================================================================
-            if (grid.options[grid.option_colMove] && document.querySelectorAll(selector + ' .tbs-grid-move').length > 0) {
+            if (grid.options[grid.option_colMove] && document.querySelectorAll(' .tbs-grid-move').length > 0) {
                 let rectPanel30 = document.querySelector(selector + ' .tbs-grid-panel30').getBoundingClientRect();
-                let rectMoveCell = document.querySelector(selector + '.tbs-grid-move').getBoundingClientRect();
-    
+                let rectMoveCell = document.querySelector('.tbs-grid-move').getBoundingClientRect();
+
                 let headerColumns = grid.headerColumns;
-                let xPos = window.pageXOffset + e.clientX; //절대좌표
-                let moveCol = headerColumns[moveCellRowIndex - 1][moveCellIndex];
+                let xPos = window.pageXOffset + e.clientX;
+                let movingColumn = headerColumns[moveCellRowIndex - 1][moveCellIndex];
                 let targetCol;                    
                 let tdList20 = document.querySelectorAll(selector + ' .tbs-grid-panel20 tbody td:not([style*="display :none"]');
                 let posWidth = 50;
-                //================================================================== 조건이 중요!!!
-                for (let x = 0, len = tdList20.length; x < len; x++){
+
+                for (let x = 0, len= tdList20.length; x < len; x++){
                     let cell = tdList20[x];
                     targetCol = headerColumns[cell.parentNode.rowIndex - 1][cell.cellIndex];
-                    if (rectMoveCell.right < rectPanel30.left || rectPanel30.right < rectMoveCell.left){
-                    } //moveDiv가 양쪽을 모두 벗어났을 경우...
+                    if (rectMoveCell.right < rectPanel30.left || rectPanel30.right < rectMoveCell.left) {}
                     else {
                         //let direction;
                         let b = false;
                         if ((xPos - posWidth <= cell.getBoundingClientRect().left && cell.getBoundingClientRect().left <= xPos + posWidth)
-                            && moveCol[grid.column_rowindex]  == targetCol[grid.column_rowindex]
-                            && moveCol[grid.column_parentNum] == targetCol[grid.column_parentNum]  //column_parentNum
+                            && movingColumn[grid.column_rowindex]  == targetCol[grid.column_rowindex]
+                            && movingColumn[grid.column_parentNum] == targetCol[grid.column_parentNum]  //column_parentNum
                             && moveCell.cellIndex != cell.cellIndex){  
-                                changeHeaderColumnOrder(moveCell, cell, 'before');  //header column이 변경되어야 한다.
+                                changeHeaderColumnOrder(moveCell, cell, 'before');
                                 direction = 'before';
                                 b = true;
                                 break;      
                         }                  
                         if (!b) {
                             if ((xPos - posWidth <= cell.getBoundingClientRect().right && cell.getBoundingClientRect().right <= xPos + posWidth)
-                            && moveCol[grid.column_rowindex] == targetCol[grid.column_rowindex]
-                            && moveCol[grid.column_parentNum] == targetCol[grid.column_parentNum]
+                            && movingColumn[grid.column_rowindex]  == targetCol[grid.column_rowindex]
+                            && movingColumn[grid.column_parentNum] == targetCol[grid.column_parentNum]
                             && moveCell.cellIndex != cell.cellIndex){  
-                                //if (moveCell.getBoundingClientRect().left == cell.getBoundingClientRect().right) break;//이동위치가 자신의 위치와 같다면 stop      
-                                //hide cell Index를 제외하고...
-                                changeHeaderColumnOrder(moveCell, cell, 'after');  //header column이 변경되어야 한다.
+                                changeHeaderColumnOrder(moveCell, cell, 'after');
                                 direction = 'after';
                                 break;
                             }
                         }
                     }
                 }
-                //==================================================================
                 grid.tbs_displayPanel20();
                 changeColumnOrder();
-                if (grid.topColumns.length    > 0) this.tbs_displayPanel40('panel40', this.topColumns);
-                if (grid.footerColumns.length > 0) this.tbs_displayPanel50('panel50', this.footerColumns);
-                let dc = grid.columns;
-                let headerColList  = document.querySelectorAll(selector + ' .tbs-grid-panel20   thead th');
-                let contentColList = document.querySelectorAll(selector + ' .tbs-grid-panel30  thead th');
-                let nWidth;
-                for (let i = 0, len = dc.length; i < len; i++) {
-                    nWidth = dc[i][grid.column_width] + 'px';
-                    headerColList[i].style.width  = nWidth;
-                    contentColList[i].style.width = nWidth;
+
+                if (grid.topColumns.length    > 0) grid.tbs_displayPanel40('panel40', grid.topColumns);
+                if (grid.footerColumns.length > 0) grid.tbs_displayPanel50('panel50', grid.footerColumns);
+
+                let columns= grid.columns;
+                let tableRows20= document.querySelectorAll(selector + ' .tbs-grid-panel20  thead th');
+                let tableRows30= document.querySelectorAll(selector + ' .tbs-grid-panel30  thead th');
+
+                for (let i = 0, len= columns.length; i < len; i++) {
+                    let column = columns[i];
+                    let styleWidth= column[grid.column_width] + 'px';
+                    tableRows20[i].style.width = styleWidth;
+                    tableRows30[i].style.width = styleWidth;
                 }                    
                 grid.tbs_clearRange(0, -1);
                 grid.tbs_displayPanel30(grid.tbs_getFirstRowIndex());
             }
-            if (document.querySelectorAll('.tbs-grid-move').length > 0) { document.querySelector('.tbs-grid-move').remove(); }
+            if (document.querySelectorAll('.tbs-grid-move').length > 0) document.querySelector('.tbs-grid-move').remove();
             flagLeft    = false;
             flagRight   = false;
         }
@@ -227,7 +225,7 @@ TbsGrid.prototype.panel20_select = function() { //type : header, content, left, 
                 moveDiv.appendChild(table);
                 document.body.appendChild(moveDiv);
             }
-            moveDiv = document.querySelector('.tbs-grid-move'); 
+            moveDiv = document.querySelector('.tbs-grid-move');
             moveDiv.querySelector('.tbs-grid-cell-span').textContent = col.querySelector('.tbs-grid-cell-span').innerText;
             moveDiv = document.querySelector('.tbs-grid-move');
 
@@ -341,11 +339,10 @@ TbsGrid.prototype.panel20_select = function() { //type : header, content, left, 
     }
     
     const selectRefresh = function(type, lastX, lastY) {
-        //************************trContent 는 갯수가 변한다.**********************************************
         let content = document.querySelector(selector + ' .tbs-grid-panel30');
         let table = document.querySelector(selector + ' .tbs-grid-panel30 .tbs-grid-table');
         trContent = document.querySelectorAll(selector + ' .tbs-grid-panel30 .tbs-grid-table tbody tr:not([style*="display:"])');
-        //==================================================================
+
 	    let startRowIndex  = grid.startRowIndex;
 	    let lastRowIndex   = grid.lastRowIndex;
 	    let startCellIndex = grid.startCellIndex;
@@ -354,7 +351,7 @@ TbsGrid.prototype.panel20_select = function() { //type : header, content, left, 
         let trCount = trContent.length;
         let tdCount = (trContent.length > 0) ? trContent[0].childNodes.length : 0;
         let minRowIndex, maxRowIndex, maxCellIndex, minCellIndex;
-        if (type == 'right') { //우로
+        if (type == 'right') {
             if (table.style.left == (-1 * grid.scroll.xHiddenSize) + 'px') {
                 flagRight = false;
                 grid.tbs_clearRange(0, -1);
@@ -374,7 +371,7 @@ TbsGrid.prototype.panel20_select = function() { //type : header, content, left, 
             }
         } 
         //==================================================================
-        else if (type == 'left') { //좌로
+        else if (type == 'left') {
             if (table.style.left == '0px') {
                 flagLeft = false;
                 grid.tbs_clearRange(0, -1);
@@ -382,7 +379,6 @@ TbsGrid.prototype.panel20_select = function() { //type : header, content, left, 
             }
             else {
                 grid.tbs_setBarPositionByDirection('left');
-                //선택이 다 되었는지 여부는 또 다르다.
                 for (let rowIndex = 0; rowIndex < trCount; rowIndex++) {
                     for (let cellIndex = tdCount - 1; cellIndex >= 0; cellIndex--) {
                         if (grid.columns[cellIndex][grid.column_visible] == false) continue;
@@ -395,7 +391,7 @@ TbsGrid.prototype.panel20_select = function() { //type : header, content, left, 
             }
         }
         //==================================================================
-        else if (type == 'down') { //아래로
+        else if (type == 'down') {
         //==================================================================
             grid.tbs_setBarPositionByDirection('down');
             if (lastRowIndex < (grid.data_panel30.length - 1)) {
@@ -407,7 +403,7 @@ TbsGrid.prototype.panel20_select = function() { //type : header, content, left, 
 
         }
         //==================================================================
-        else if (type == 'up') { //위로
+        else if (type == 'up') {
         //==================================================================
             grid.tbs_setBarPositionByDirection('up');
             if (lastRowIndex != 0) {

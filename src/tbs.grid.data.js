@@ -1,12 +1,9 @@
 /**
- * tbs.grid.data.js
+ * @function tbs_setGridData
  *
+ * @description set data in grid
+ * @param data : json data
  */
-//================================================================
-//
-// Common
-//
-//================================================================
 TbsGrid.prototype.tbs_setGridData = function (data) {
     let selector = '#' + this.gridId;
     let grid = this;
@@ -16,19 +13,18 @@ TbsGrid.prototype.tbs_setGridData = function (data) {
     this.data_insert = [];
     this.data_update = [];
     this.data_delete = [];
-    //=============================================================
-    // [start] data 생성
-    //=============================================================
+
+    // [start] data
     this.data_panel31 = [];		    //view - filter
-    this.data_select_panel30 = [];  //select color : value 0, 1	   , display field만 관리
+    this.data_select_panel30 = [];  //select color : value 0, 1
     this.data_select_panel31 = [];	//view - filter
     for (let rowIndex = 0; rowIndex < data.length; rowIndex++) {
-        data[rowIndex]['rowId'] = rowIndex; //data : rowId 추가
+        data[rowIndex]['rowId'] = rowIndex;
     }
     for (let rowIndex = 0; rowIndex < data.length; rowIndex++) {
         let data31 = {};
         data31['num']   = parseInt(rowIndex + 1);
-        data31['mode']  = ''; 	//insert, update, delete 표시를 위해
+        data31['mode']  = '';
         data31['rowId'] = data[rowIndex]['rowId'];
         this.data_panel31.push(data31);
     }
@@ -47,7 +43,7 @@ TbsGrid.prototype.tbs_setGridData = function (data) {
         source.rowId = row['rowId'];
         data30.rowId = row['rowId'];
 
-        provider.mode = ''; // S, U, I, D, blank 로 구성. mode = 'S' 는 merge 일 경우 필요
+        provider.mode = ''; // S, U, I, D, blank
         source.mode = '';
         data30.mode   = '';
 
@@ -61,11 +57,6 @@ TbsGrid.prototype.tbs_setGridData = function (data) {
         for (let colIndex = 0, len = column.length; colIndex < len; colIndex++) {
             let col = column[colIndex];
             let id  = col[grid.column_id];
-            //=============================================
-            // 여기 상당히 중요한데,
-            // data 는 null 허용
-            // 숫자도 문자로 들어가야 함 => getValue시 숫자는 숫자로 반환. 값이 없으면 0.
-            //=============================================
             let val = this.null(row[id]) ? null : this.tbs_renderCode(col, row[id]);
             provider.data[id] = row[id];
             let colType = column[colIndex][grid.column_type];
@@ -100,9 +91,6 @@ TbsGrid.prototype.tbs_setGridData = function (data) {
         this.data_panel30.push(data30);
     }
     this.maxRowId = data.length;
-    //=============================================================
-    // [end] data 생성
-    //=============================================================
 
     document.querySelector(selector + ' .tbs-grid-panel10-filter').value = '';
     this.tbs_clearRange(0, -1);
@@ -124,17 +112,21 @@ TbsGrid.prototype.tbs_setGridData = function (data) {
         this.colSizeType();
     }
 }
+/**
+ * @function tbs_setTreeGridParentKey
+ *
+ * @description
+ * @param dataRows
+ */
+
 TbsGrid.prototype.tbs_refreshRefData = function () {
     let selector = '#' + this.gridId;
     let grid = this;
 
     let data = this.data_panel30;
-    //=============================================================
-    //view 기준으로 left, data_select_panel31, select 재생성
-    //=============================================================
-    this.data_panel31 = [];		    //view - filter
-    this.data_select_panel30 = [];  // select color : value 0, 1	   , display field만 관리
-    this.data_select_panel31 = [];	//view - filter
+    this.data_panel31 = [];		    // view - filter
+    this.data_select_panel30 = [];  // select color : value 0, 1
+    this.data_select_panel31 = [];	// view - filter
 
     for (let rowIndex = 0; rowIndex < data.length; rowIndex++) {
         let itemSelect = {};
@@ -145,11 +137,11 @@ TbsGrid.prototype.tbs_refreshRefData = function () {
         itemSelect.data = new Uint8ClampedArray([]); //new
 
         itemLeftView['num'] = rowIndex + 1;
-        itemLeftView['mode'] = ''; //insert, update, delete 표시를 위해
+        itemLeftView['mode'] = ''; //insert, update, delete
         itemLeftView['rowId'] = data[rowIndex]['rowId'];
 
         itemLeftSelect['num'] = 0;
-        itemLeftSelect['mode'] = 0; //insert, update, delete 표시를 위해
+        itemLeftSelect['mode'] = 0; //insert, update, delete
         itemLeftSelect['rowId'] = data[rowIndex]['rowId'];
 
         this.data_panel31.push(itemLeftView);
@@ -159,6 +151,12 @@ TbsGrid.prototype.tbs_refreshRefData = function () {
     this.tbs_clearRange(0, -1);
     this.tbs_displayPanel30(0);
 }
+/**
+ * @deprecated to be deprecated
+ * @function tbs_displayDataView
+ * @param matrix
+ * @param type
+ */
 TbsGrid.prototype.tbs_displayDataView = function(matrix, type) {
     if (type == 'groupView') {
         let table = document.createElement('table');
@@ -430,12 +428,8 @@ TbsGrid.prototype.tbs_validateTopRowIndex = function (panelName, topRowIndex) {
 
     if (panelName == 'panel30' || panelName == 'panel31') {
         if (this.fixedRowIndex != -1) {
-            // topRowIndex : 50 부터 시작
-            // 번호 : 51 부터 시작
-
-            // topRowIndex2는 0 부터 시작하는 topRowIndex
             let topRowIndex2 = topRowIndex - (this.fixedRowIndex + 1);
-            let rowCount = this.tbs_getRowCount() - (this.fixedRowIndex + 1); //242 - 50 = 192 개
+            let rowCount = this.tbs_getRowCount() - (this.fixedRowIndex + 1);
 
             if (this.pageRowCount > this.pageIntRowCount) {
                 if (topRowIndex2 > (rowCount - this.pageRowCount + 1)) {
@@ -545,13 +539,12 @@ TbsGrid.prototype.tbs_getChangedRowsData_ref = function () {
                     let c = column[x];
                     if (key == c[grid.column_id] && c[grid.column_required] == true && c[grid.column_autosize] != true) {
                         let value = r.data[key].replace(/ /gi, '');
-                        if (value == '') { alert('필수 값을 입력해주십시요'); return; }
+                        if (value == '') { alert('input required values'); return; }
                     }
                 }
             }
         }
         if (r.mode == 'I') {
-            // I 일 경우...(pilsu 이면서 column_autosize항목 제외하고) pilsu 항목 모두가 빠져 있을 경우는 continue 시킨다.
             let column = this.columns;
             let colCheckCount = 0;
             let colCount = 0;
@@ -567,7 +560,7 @@ TbsGrid.prototype.tbs_getChangedRowsData_ref = function () {
                     }
                 }
             }
-            if (colCount > colCheckCount) { alert('필수 값을 모두 입력해주십시요'); return; }
+            if (colCount > colCheckCount) { alert('input required values'); return; }
         }
         let item = JSON.parse(JSON.stringify(d[i]));
         result.push(item);
@@ -683,7 +676,7 @@ TbsGrid.prototype.tbs_addRow = function (row, type = 'bottom') {
     }
     if (type == 'up') {
         let minRowIndex = rowIndexList[0];
-        this.data_source.splice(minRowIndex, 0, source);//첫번째 파라미터로 추가할 값이 들어갈 index를 지정하고,두번째 파라미터는 0으로 지정하고 (삭제할 원소가 0개)
+        this.data_source.splice(minRowIndex, 0, source);
         this.data_panel30.splice(minRowIndex, 0, data30);
         this.data_panel31.splice(minRowIndex, 0, data31);
         //this.insertData.push(insertItem);
@@ -692,7 +685,7 @@ TbsGrid.prototype.tbs_addRow = function (row, type = 'bottom') {
         let topRowIndex = this.tbs_getFirstRowIndex();
 
         this.tbs_setScroll(this.const_vertical);
-        this.tbs_setBarPosition(this.const_vertical, topRowIndex); //topRowIndex에 따라.
+        this.tbs_setBarPosition(this.const_vertical, topRowIndex);
         this.tbs_clearRange(0, -1);
         this.tbs_selectedRange(minRowIndex, minRowIndex);
         //this.tbs_displayPanel30(topRowIndex);
@@ -701,14 +694,14 @@ TbsGrid.prototype.tbs_addRow = function (row, type = 'bottom') {
     if (type == 'down') {
         let minRowIndex = rowIndexList[0];
         let addRowIndex = minRowIndex + 1;
-        if (minRowIndex == this.data_panel30.length - 1) {	//마지막 row 일 경우
+        if (minRowIndex == this.data_panel30.length - 1) {
             this.data_source.push(source);
             this.data_panel30.push(data30);
             this.data_panel31.push(data31);
             addRowIndex = minRowIndex + 1;
         }
         else {
-            this.data_source.splice(addRowIndex, 0, source);//첫번째 파라미터로 추가할 값이 들어갈 index를 지정하고,두번째 파라미터는 0으로 지정하고 (삭제할 원소가 0개)
+            this.data_source.splice(addRowIndex, 0, source);
             this.data_panel30.splice(addRowIndex, 0, data30);
             this.data_panel31.splice(addRowIndex, 0, data31);
         }
@@ -738,12 +731,12 @@ TbsGrid.prototype.tbs_removeRows = function (rows) {
 
     let data = this.data_panel30;
 
-    //삭제되기전 rowid를 앞과 뒤를 찾자(기본적으로 뒤를 찾는다)
+    // before delete, find next, prev rowid (default. next rowid)
     let prevRowId = -1;
     let nextRowId = -1;
     let nextRowIndex = -1;
 
-    for (let i = 0; i < data.length; i++) { 	//next rowIndex를 찾기
+    for (let i = 0; i < data.length; i++) { 	// find next rowIndex
         if (data[i].rowId == rows[rows.length - 1].rowId) { nextRowIndex = i + 1; break; }
     }
 

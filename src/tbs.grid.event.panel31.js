@@ -31,7 +31,7 @@ TbsGrid.prototype.panel31_select = function() { //type : header, content, left, 
         startCellIndex = col.cellIndex;
         lastCellIndex = -1;
 
-        startX = window.pageXOffset + e.clientX; //절대좌표
+        startX = window.pageXOffset + e.clientX;
         startY = window.pageYOffset + e.clientY;
         //=========================================================================================
         if (window.event.ctrlKey) {

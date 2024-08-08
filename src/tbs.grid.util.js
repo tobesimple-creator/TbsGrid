@@ -19,6 +19,16 @@ TbsGrid.prototype.tbs_error = function(p) {
 TbsGrid.prototype.tbs_caution = function(p) {
     if (this.debug_mode) { console.log('[TbsGrid caution] ' + p); r = false; }
 }
+/**
+ * @function tbs_copyJson
+ *
+ * @description deep copy
+ * @param p
+ * @returns {any}
+ */
+TbsGrid.prototype.tbs_copyJson = function(p) {
+    return this.null(p) ? {} : JSON.parse(JSON.stringify(p));
+}
 //================================================================
 //
 // String
