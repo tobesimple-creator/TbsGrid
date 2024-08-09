@@ -855,6 +855,9 @@ TbsGrid.prototype.tbs_getSelectedRowIndex = function() {
 // Layout Data
 //
 //================================================================
+TbsGrid.prototype.tbs_getLayout = function (rowIndex, id) {
+    return this.data_panel30[rowIndex].layout[id];
+}
 TbsGrid.prototype.tbs_getLayoutData = function (rowIndex, id, type) {
     return this.data_panel30[rowIndex].layout[id][type];
 }

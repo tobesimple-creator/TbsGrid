@@ -133,7 +133,7 @@ TbsGrid.prototype.event_input = function() {
             }
             if (rowIndex < lastRowIndex) s += '\r\n'
         }
-        ta.textContent = s; //innerText는 안됨
+        ta.textContent = s;
         document.body.appendChild(ta);
         ta.select();
 

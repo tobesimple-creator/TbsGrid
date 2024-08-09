@@ -1,7 +1,3 @@
-/**
- * tbs.grid.column.js
- *
- */
 TbsGrid.prototype.tbs_display = function (panelArray, topRowIndex) {
     let selector = '#' + this.gridId;
     let grid = this;
@@ -1174,11 +1170,11 @@ TbsGrid.prototype.tbs_displayOneSelection = function (startRowIndex, startRowInd
     }
     this.tbs_displaySelectedLine();
 }
-//================================================================
-//
-// Select Range
-//
-//================================================================
+/**
+ *
+ * Select Range functions
+ *
+ */
 TbsGrid.prototype.tbs_setSelectedRange = function (startRowIndex, lastRowIndex, startCellIndex, lastCellIndex, topRowIndex, type = 'add') {
     let selector = '#' + this.gridId;
     let grid = this;
@@ -1382,11 +1378,11 @@ TbsGrid.prototype.tbs_clearSelection = function (panelName = '') {
         document.querySelectorAll(selector + ' .tbs-grid-panel60 .tbs-grid-cell-select').forEach(cell => cell.classList.remove('tbs-grid-cell-select'));
     }
 }
-//================================================================
-//
-// setDataTable Functions : for Panel30, panel60
-//
-//================================================================
+/**
+ *
+ * setDataTable Functions : for Panel30, panel60
+ *
+ */
 TbsGrid.prototype.tbs_setDataTable = function (param) {
     // param : {panel: panel, topRowIndex: topRowIndex}
     let selector = '#' + this.gridId;
@@ -1656,44 +1652,31 @@ TbsGrid.prototype.tbs_setDataTable3 = function (param) {
         for (let x = 0; x <= lastColumnIndex; x++) {
             let tableCell = tableRow.childNodes[x]; //content tr > tableCell
             if (this.fixedColumnIndex != -1) {
-                if(x > this.fixedColumnIndex && x < startColumnIndex) continue;
+                if (x > this.fixedColumnIndex && x < startColumnIndex) continue;
             }
-            else { if(x < startColumnIndex) continue; }
-            let column = this.columns[x];
+            else { if (x < startColumnIndex) continue; }
 
-            let layout = this.data_panel30[i].layout[column[grid.column_id]];
-            let colValue = this.tbs_getLayoutData(i, column[grid.column_id], this.layout_text);
+            let column = grid.columns[x];
+            let layout = grid.tbs_getLayout(i, column[grid.column_id]);
+            let colValue = layout[grid.layout_text];
 
-            if (tableCell.style.textAlign       != column[grid.column_align])          tableCell.style.textAlign = column[grid.column_align];
-            if (tableCell.style.width           != column[grid.column_width] + 'px')   tableCell.style.width = column[grid.column_width] + 'px';
-            if (tableCell.style.backgroundImage != '')                                 tableCell.style.backgroundImage = '';
-            if (tableCell.style.display         != '')                                 tableCell.style.display = '';
-            if (tableCell.rowSpan != '1') tableCell.rowSpan = '1';
-            tableCell.style.display = layout[grid.layout_visible] == true ? '' : 'none';
-            tableCell.rowSpan       = layout[grid.layout_rowspan];
-
-            let selectedValue = this.tbs_isSelectedCell(panelName, i, x);
-            if (selectedValue == 1) {
-                if (this.startRowIndex == i && this.startCellIndex == x) {
-                    //console.log(`selectedValue ${selectedValue}`)
-                    tableCell.classList.add('tbs-grid-cell-start');
-                }
-                else {
-                    //console.log(`tbs-grid-cell-select : ${selectedValue}`)
-                    tableCell.classList.add('tbs-grid-cell-select');
-                }
-            }
-            if (tableCell.childNodes[0].textContent != colValue) tableCell.childNodes[0].textContent = colValue;
+            grid.tbs_setCellStyle(tableCell, 'textAlign'      , column[grid.column_align]);
+            grid.tbs_setCellStyle(tableCell, 'width'          , column[grid.column_width] + 'px');
+            grid.tbs_setCellStyle(tableCell, 'backgroundImage', '');
+            grid.tbs_setCellStyle(tableCell, 'display'        , layout[grid.layout_visible] == true ? '' : 'none');
+            grid.tbs_setCell(tableCell, 'rowSpan', '1');
+            grid.tbs_setCell(tableCell, 'rowSpan', layout[grid.layout_rowspan]);
+            grid.tbs_setSelectedCell(panelName, tableCell, i, x);
+            grid.tbs_setCell(tableCell.childNodes[0], 'textContent', colValue);
         }
         for (let x = 0; x <= lastColumnIndex; x++) {
-            let tableCell = tableRow.childNodes[x];
-            if (this.fixedColumnIndex != -1 && x <= this.fixedColumnIndex) {
-                if(tableCell.style.display != 'none') tableCell.style.display = 'none';
-            }
+            let tableCell= tableRow.childNodes[x];
+            if (this.fixedColumnIndex != -1 && x <= this.fixedColumnIndex)
+                grid.tbs_setCellStyle(tableCell, 'display', 'none');
         }
         tableRowIndex += 1;
     }
-    // hidden : Unnecessary tableRows
+    // hide Unnecessary tableRows
     this.tbs_hiddenTableRows(panelName, tableRows, tableRowIndex, this.pageRowCount);
 
     // panel21 : display rowCount
@@ -1882,5 +1865,23 @@ TbsGrid.prototype.tbs_setDataTableCellLine = function(panelName, tableCell, para
         tableCellDiv.classList.add('.tbs-grid-cell-line-bottom');
         tableCellDiv.classList.add('.tbs-grid-cell-line-left');
         tableCellDiv.classList.add('.tbs-grid-cell-line-right');
+    }
+}
+/**
+ *
+ * cell property, style functions
+ *
+ */
+TbsGrid.prototype.tbs_setCellStyle = function(tableCell, property, value) {
+    if (tableCell.style[property] != value) tableCell.style[property] = value;
+}
+TbsGrid.prototype.tbs_setCell = function(tableCell, property, value) {
+    if (tableCell[property] != value) tableCell[property] = value;
+}
+TbsGrid.prototype.tbs_setSelectedCell = function(panelName, tableCell, rowIndex, cellIndex) {
+    let value = this.tbs_isSelectedCell(panelName, rowIndex, cellIndex);
+    if (value == 1) {
+        if (this.startRowIndex == rowIndex && this.startCellIndex == cellIndex) tableCell.classList.add('tbs-grid-cell-start');
+        else tableCell.classList.add('tbs-grid-cell-select');
     }
 }
