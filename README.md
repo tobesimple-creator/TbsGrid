@@ -4,9 +4,11 @@ Welcome to TbsGrid(developing)
 
 TbsGrid is html web grid.
 
-This grid is made by only javascript and css
+This grid is made by only javascript and css.
 
-I am a web grid developer.
+It's just the beginning
+
+I am into javascript development.
 
 TbsGrid and demo site is currently under development.
 
